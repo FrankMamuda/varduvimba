@@ -1,0 +1,27 @@
+<RCC>
+    <qresource prefix="/">
+        <file>dictionary/lv_LV.aff</file>
+        <file>dictionary/lv_LV.dic</file>
+        <file>content/ColourButton.qml</file>
+        <file>content/ImageButton.qml</file>
+        <file>content/YesNoDialog.qml</file>
+        <file>content/KeyBoard.qml</file>
+        <file>content/KeyRow.qml</file>
+        <file>content/LetterRow.qml</file>
+        <file>content/NamedSwitch.qml</file>
+        <file>content/Settings.qml</file>
+        <file>content/Spinner.qml</file>
+        <file>content/TextButton.qml</file>
+        <file>main.qml</file>
+        <file>scripts/main.js</file>
+        <file>icons/accept.svg</file>
+        <file>icons/arrow_left.svg</file>
+        <file>icons/arrow_right.svg</file>
+        <file>icons/cross.svg</file>
+        <file>icons/giveup.svg</file>
+        <file>icons/left.svg</file>
+        <file>icons/restart.svg</file>
+        <file>icons/settings.svg</file>
+        <file>content/Banner.qml</file>
+    </qresource>
+</RCC>
