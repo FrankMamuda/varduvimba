@@ -32,8 +32,8 @@ Window {
     id: root
     minimumWidth: 480
     minimumHeight: 600
-    width: 480
-    height: 720
+    width: 411
+    height: 823
     visible: true
     title: qsTr( "Vārdotājs" )
 
@@ -359,7 +359,7 @@ Window {
             Text {
                 id: message
                 anchors.centerIn: parent
-                font.pixelSize: root.badWord || root.lost ? 24 : 28
+                font.pixelSize: ( root.badWord || root.lost ) ? ( Math.round(( 20 + root.word.length ) * ( -0.83 ) + 45 )) : 28
                 text: root.badWord ? 'Vārds neeksistē!\nPievienot vārdnīcai?' : ( root.lost ? ( 'Nepaveicās! Vārds ir \'' + root.word + '\'' ) : ( 'Uzvara!' ))
                 font.bold: true
                 style: Text.Raised

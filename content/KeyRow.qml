@@ -222,7 +222,9 @@ Row {
                         popup.x = pos.x + mouseArea.width / 2 - popup.background.width / 2;
                         popup.y = pos.y - popup.background.height;
                         popup.letter = key.letter;
-                        popup.open();
+
+                        if ( !root.gameOver )
+                            popup.open();
                     }
                 }
 
@@ -246,8 +248,10 @@ Row {
                 onReleased: {
                     timer.stop();
 
-                    if ( root.os === 'android' && !root.gameOver )
-                        root.hapticFeedback.send( 3 );
+                    if ( root.os === 'android' && !root.gameOver ) {
+                        if (( root.currentString.length < root.word.length ) || key.letter === '0' || key.letter === '1' )
+                            root.hapticFeedback.send( 3 );
+                    }
 
                     console.log( 'Press: ' + mouseArea.letter )
                     root.press( mouseArea.letter );
@@ -275,6 +279,7 @@ Row {
      */
     Popup {
         id: popup
+        scale: Math.min( root.widthScale, root.heightScale )
 
         // TODO: this must be scaled appropriately
 
