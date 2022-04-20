@@ -34,7 +34,7 @@ Rectangle {
     property string text: 'Yes'
     property string textColor: 'white'
     property string styleColor: '#000000'
-
+    property int fontPixelSize: 28
 
     signal clicked
 
@@ -48,7 +48,7 @@ Rectangle {
     Text {
         id: textItem
         anchors.centerIn: parent
-        font.pixelSize: 28
+        font.pixelSize: button.fontPixelSize
         text: button.text
         font.bold: true
         style: Text.Raised
@@ -60,7 +60,12 @@ Rectangle {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
-        onClicked: button.clicked()
+        onClicked: {
+            button.clicked();
+
+            if ( root.os === 'android' )
+                root.hapticFeedback.send( 3 );
+        }
     }
 
     property var onClicked

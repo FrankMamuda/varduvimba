@@ -8,9 +8,6 @@ SOURCES += \
         settings.cpp \
         spellcheck.cpp
 
-resources.prefix = /$${TARGET}
-RESOURCES += \
-    resources.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -24,6 +21,12 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 INCLUDEPATH += $$PWD/include/
+
+CONFIG += locale_en
+
+resources.prefix = /$${TARGET}
+
+RESOURCES += resources.qrc
 
 win32 {
     QMAKE_LIBDIR += C:/msys64/mingw64/lib/
@@ -61,7 +64,9 @@ DISTFILES += \
     android/res/drawable/ic_water.xml \
     android/res/mipmap-anydpi-v26/ic_launcher.xml \
     android/res/mipmap-anydpi-v26/ic_launcher_round.xml \
+    android/res/values-lv/strings.xml \
     android/res/values/libs.xml \
+    android/res/values/strings.xml \
     android/src/org/factory12/vardotajs/HapticFeedback.java \
     android/src/org/factory12/vardotajs/AdBanner.java \
     content/Banner.qml \
@@ -75,7 +80,9 @@ DISTFILES += \
     content/Spinner.qml \
     content/TextButton.qml \
     content/YesNoDialog.qml \
+    content/Help.qml \
     main.qml \
     scripts/main.js
 
 DEFINES += PRODUCTION_RELEASE
+

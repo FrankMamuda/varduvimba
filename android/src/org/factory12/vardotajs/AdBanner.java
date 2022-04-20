@@ -92,6 +92,11 @@ public class AdBanner {
             return;
 
         AdBanner.postOnUI( () -> {
+            if ( this.adView.getAdSize() != null )
+                return;
+
+            System.out.println( "Setup ad banner" );
+
             AdSize adSize;
 
             Display display = activity.getWindowManager().getDefaultDisplay();
@@ -99,8 +104,8 @@ public class AdBanner {
 
             display.getMetrics( displayMetrics );
             adSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize( activity, ( int ) ( ( ( float ) displayMetrics.widthPixels ) / displayMetrics.density ) );
-
             adView.setAdSize( adSize );
+
             m_width = adSize.getWidthInPixels( activity );
             m_height = adSize.getHeightInPixels( activity );
         } );

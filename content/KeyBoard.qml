@@ -34,12 +34,12 @@ Column {
     property int mode: 1
 
     property var letters: {
-        0: [ 'AERTUIOP',     'SDFGHJKL',     '0ZCVBNM1' ],
-        1: [ 'ĀEĒRTUŪIĪOPĻ', 'ASŠDFGĢHJKĶL', '0ZŽCČVBNŅM1' ],
-        2: [ 'AĀBCČDEĒF',    'GĢHIĪJKĶL',    'ĻMNŅOPRSŠ',    '0TUŪVZŽ1' ] };
+        0: root.locale === 'lv_LV' ? [ 'AERTUIOP',     'SDFGHJKL',     '0ZCVBNM1' ] : [ 'QWERTYUIOP',   'ASDFGHJKL',    '0ZXCVBNM1' ],
+        1: root.locale === 'lv_LV' ? [ 'ĀEĒRTUŪIĪOPĻ', 'ASŠDFGĢHJKĶL', '0ZŽCČVBNŅM1' ] : [ 'QWERTYUIOP',   'ASDFGHJKL',    '0ZXCVBNM1' ],
+        2: root.locale === 'lv_LV' ? [ 'AĀBCČDEĒF',    'GĢHIĪJKĶL',    'ĻMNŅOPRSŠ',    '0TUŪVZŽ1' ] : [ 'QWERTYUIOP',   'ASDFGHJKL',    '0ZXCVBNM1' ] };
 
     property var subLetters: {
-        0: [ 'ĀĒRTŪĪOP',     'ŠDFĢHJĶĻ',     '0ŽČVBŅM1' ],
+        0: root.locale === 'lv_LV' ? [ 'ĀĒRTŪĪOP',     'ŠDFĢHJĶĻ',     '0ŽČVBŅM1' ] : [],
         1: [],
         2: [] };
 
@@ -60,50 +60,66 @@ Column {
         id: toolBarRect
         color: root.palette['keyboard']
         width: parent.width
-        height: ( toolBar.height ) * root.heightScale + 4
+        height: Math.round(( toolBar.height ) * root.heightScale + 4 )
 
         Row {
             id: toolBar
-            spacing: 64 * root.heightScale
-
+            spacing: ( width - 3 * buttonWidth ) / 2
             anchors.centerIn: parent
-            anchors.bottomMargin: 16 * root.heightScale
-            property int buttonWidth: 48 * root.heightScale
-            property int buttonHeight: 32 * root.heightScale
+            anchors.bottomMargin: Math.round( 16 * Math.min( root.widthScale, root.heightScale ))
+            width: parent.width * 0.85
+            property int buttonWidth: Math.round( 40 * Math.min( root.widthScale, root.heightScale ))
+            property int buttonHeight: Math.round( 40 * Math.min( root.widthScale, root.heightScale ))
 
             ImageButton {
                 id: restartButton
-                source: '../icons/restart.svg'
+                source: root.gameOver ? '../icons/restart.svg' : '../icons/giveup.svg'
                 color: 'transparent'
                 width: toolBar.buttonWidth
                 height: toolBar.buttonHeight
                 borderColor: 'transparent'
 
                 onClicked: {
-                    console.log( 'Reset' );
+                    if ( !root.gameOver ) {
+                        console.log( 'Give up' );
 
-                    if ( root.os === 'android' )
-                        root.hapticFeedback.send( 3 );
+                        if ( root.os === 'android' )
+                            root.hapticFeedback.send( 3 );
 
-                    if ( root.currentRow === 0 && !root.gameOver ) {
-                        if ( root.os !== 'android' )
-                            root.textInput.focus = true;
-                        return;
+                        if ( root.currentRow === 0 ) {
+                            if ( root.os !== 'android' )
+                                root.textInput.focus = true;
+                            return;
+                        }
+
+                        if ( root.currentString !== root.word )
+                            giveUpDialog.open();
+                    } else {
+                        console.log( 'Reset' );
+
+                        if ( root.os === 'android' )
+                            root.hapticFeedback.send( 3 );
+
+                        if ( root.currentRow === 0 && !root.gameOver ) {
+                            if ( root.os !== 'android' )
+                                root.textInput.focus = true;
+                            return;
+                        }
+
+                        if ( root.gameOver ) {
+                            root.resetRows();
+                        } else
+                            resetDialog.open();
+
+                        root.textInput.focus = true;
                     }
-
-                    if ( root.gameOver ) {
-                        root.resetRows();
-                    } else
-                        resetDialog.open();
-
-                    root.textInput.focus = true;
                 }
             }
 
             /*
              * Give up button
              */
-            ImageButton {
+            /*ImageButton {
                 source: '../icons/giveup.svg'
                 width: toolBar.buttonWidth
                 height: toolBar.buttonHeight
@@ -125,6 +141,23 @@ Column {
                     if ( root.currentString !== root.word )
                         giveUpDialog.open();
                 }
+            }*/
+
+            /*
+             * Help button
+             */
+            ImageButton {
+                source: '../icons/help.svg'
+                width: toolBar.buttonWidth
+                height: toolBar.buttonHeight
+                borderColor: 'transparent'
+
+                onClicked: {
+                    if ( root.os === 'android' )
+                        root.hapticFeedback.send( 3 );
+
+                    help.open();
+                }
             }
 
             /*
@@ -140,7 +173,7 @@ Column {
                     if ( root.os === 'android' )
                         root.hapticFeedback.send( 3 );
 
-                    settings.open();//.visible = true;
+                    settings.open();
                 }
             }
         }

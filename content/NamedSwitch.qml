@@ -27,18 +27,19 @@ import QtQuick.Controls
  */
 Row {
     id: namedSwitch
-    spacing: 16
+    spacing: Math.round( 16 * namedSwitch.contentScale )
 
     property string text: ''
     property bool checked: false
-    property int pixelSize: 24
+    property int pixelSize: Math.round( 24 * namedSwitch.contentScale )
     property Switch control: control
+    property real contentScale: 1.0
 
     signal clicked
 
     Text {
         anchors.verticalCenter: namedSwitch.verticalCenter
-        anchors.leftMargin: 8
+        anchors.leftMargin: Math.round( 8 * namedSwitch.contentScale )
         font.pixelSize: namedSwitch.pixelSize
         text: namedSwitch.text
         font.bold: true
@@ -55,17 +56,17 @@ Row {
 
         indicator: Rectangle {
             implicitWidth: implicitHeight * 2
-            implicitHeight: 28
+            implicitHeight: Math.round( 28 * namedSwitch.contentScale )
             x: control.leftPadding
             y: parent.height / 2 - height / 2
-            radius: 13
+            radius: Math.round( 13 * namedSwitch.contentScale )
             color: control.checked ? "#17a81a" : "#ffffff"
             border.color: control.checked ? "#17a81a" : "#cccccc"
 
             Rectangle {
                 x: control.checked ? parent.width - width : 0
-                width: 28
-                height: 28
+                width: Math.round( 28 * namedSwitch.contentScale )
+                height: Math.round( 28 * namedSwitch.contentScale )
                 radius: width / 2
                 color: control.down ? "#cccccc" : "#ffffff"
                 border.color: control.checked ? ( control.down ? "#17a81a" : "#21be2b" ) : "#999999"

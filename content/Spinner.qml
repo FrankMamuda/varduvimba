@@ -30,19 +30,20 @@ Item {
     id: spinner
 
     property string text: ''
-    property int pixelSize: 24
+    property int pixelSize: Math.round( 24 * spinner.contentScale )
     property int value: 1
     property int min: 0
     property int max: 10
     property bool textMode: false
     property var textValues: []
+    property real contentScale: 1.0
 
     width: bigRow.width
     height: bigRow.height
 
     Row {
         id: bigRow
-        spacing: 16
+        spacing: Math.round( 16 * spinner.contentScale )
 
         Text {
             anchors.verticalCenter: bigRow.verticalCenter
@@ -62,13 +63,13 @@ Item {
 
             Row {
                 id: row
-                spacing: 12
+                spacing: Math.round( 12 * spinner.contentScale )
                 anchors.centerIn: parent
 
                 ImageButton {
                     anchors.verticalCenter: row.verticalCenter
-                    width: 28
-                    height: 28
+                    width: Math.round( 28 * spinner.contentScale )
+                    height: Math.round( 28 * spinner.contentScale )
                     radius: width / 2
                     source: '../icons/arrow_left.svg'
                     enabled: spinner.textMode || spinner.value > spinner.min
@@ -104,8 +105,8 @@ Item {
 
                 ImageButton {
                     anchors.verticalCenter: row.verticalCenter
-                    width: 28
-                    height: 28
+                    width: Math.round( 28 * spinner.contentScale )
+                    height: Math.round( 28 * spinner.contentScale )
                     radius: width / 2
                     source: '../icons/arrow_right.svg'
                     enabled: spinner.textMode || spinner.value < spinner.max
@@ -120,7 +121,6 @@ Item {
                                 return;
                             }
                         }
-
 
                         if ( root.os === 'android' )
                             root.hapticFeedback.send( 3 );

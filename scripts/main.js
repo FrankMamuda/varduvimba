@@ -32,6 +32,7 @@ function save() {
     state.k = root.keyboard.mode;
     state.z = root.lost;
     state.d = root.darkMode;
+    state.x = root.locale;
 
     // save in external string
     root.settings.set( "state", JSON.stringify( state ));
@@ -58,6 +59,9 @@ function reset( reinitialize = true ) {
     root.initialLength = root.word.length;
     root.lost = false;
 
+    if ( root.locale !== 'lv_LV' )
+        root.keyboard.mode = 1;
+
     if ( reinitialize )
         root.save();
 
@@ -74,7 +78,18 @@ function load() {
     try {
         state = JSON.parse( root.settings.get( "state" ));
     } catch ( exception ) {
+        console.log( 'Load spellcheck (initial)' );
+
+        if ( root.locales.indexOf( root.locale ) === -1 )
+            root.locale = root.locales[0]; // default to en_US
+
+        root.spellCheck.initialize( root.path, root.locale )
+
         root.reset();
+
+
+        help.open();
+
         return;
     }
 
@@ -85,8 +100,16 @@ function load() {
     root.word = state.w === undefined ? '' : state.w;
     root.reset( false );
     root.initialRows = state.r === undefined ? 6 : state.r;
-    root.keyboard.mode = state.k === undefined ? 0 : state.k;
+    root.keyboard.mode = state.k === undefined ? 1 : state.k;
     root.darkMode = state.d === undefined ? true : state.d;
+
+    // revert to default system locale
+    root.locale = state.x === undefined ? root.locale : state.x;
+    if ( root.locales.indexOf( root.locale ) === -1 )
+        root.locale = root.locales[0]; // default to en_US
+
+    console.log( 'Load spellcheck' );
+    root.spellCheck.initialize( root.path, root.locale )
 
     // restore used words (simulate key press)
     let y;
@@ -138,7 +161,7 @@ function press( keyLetter ) {
     root.badWord = false;
 
     // validate letter
-    const letters = /[ĀEĒRTUŪIĪOPĻASŠDFGĢHJKĶLZŽCČVBNŅM01]/i;
+    const letters = root.locale === 'lv_LV' ? /[ĀEĒRTUŪIĪOPĻASŠDFGĢHJKĶLZŽCČVBNŅM01]/i : /[QWERTYUIOPASDFGHJKLZXCVBNM01]/i;
     if ( !keyLetter.match( letters ))
         return;
 
@@ -170,12 +193,12 @@ function press( keyLetter ) {
             // only works when the row is full of lettes
             if ( root.currentString.length === root.word.length ) {
                 // ad enabler/disabler
-                if ( root.currentString === 'NĒREKLĀMĀM' ) {
+                if ( root.currentString === root.strings[root.locale]['ads_no'] ) {
                     console.log( 'Disable ads' );
                     root.settings.set( 'advertisments', false );
                 }
 
-                if ( root.currentString === 'JĀREKLĀMĀM' ) {
+                if ( root.currentString === root.strings[root.locale]['ads_yes'] ) {
                     console.log( 'Enable ads' );
                     root.settings.set( 'advertisments', true );
                 }

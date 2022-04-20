@@ -23,5 +23,9 @@
         <file>icons/restart.svg</file>
         <file>icons/settings.svg</file>
         <file>content/Banner.qml</file>
+        <file>dictionary/en_US.aff</file>
+        <file>dictionary/en_US.dic</file>
+        <file>content/Help.qml</file>
+        <file>icons/help.svg</file>
     </qresource>
 </RCC>

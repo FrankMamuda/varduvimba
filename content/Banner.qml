@@ -37,6 +37,11 @@ AdBanner {
         border.width: 2
         visible: root.os !== 'android'
 
+        Component.onCompleted: {
+            if ( root.os !== 'android' )
+                banner.height = 50;
+        }
+
         // NOTE: this dummy is used only for debug purposes
         /*
         Text {

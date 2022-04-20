@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" package="org.factory12.vardotajs" android:installLocation="auto" android:versionCode="0107" android:versionName="1.0.2">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" package="org.factory12.vardotajs" android:installLocation="auto" android:versionCode="0114" android:versionName="1.1.4">
     <!-- %%INSERT_PERMISSIONS -->
     <!-- %%INSERT_FEATURES -->
     <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:smallScreens="true"/>
@@ -7,10 +7,10 @@
     android:icon="@mipmap/ic_launcher"
     android:roundIcon="@mipmap/ic_launcher_round"
     android:name="org.qtproject.qt.android.bindings.QtApplication"
-    android:extractNativeLibs="true" android:hardwareAccelerated="true" android:label="Vārdu Vimba" android:requestLegacyExternalStorage="true" android:allowNativeHeapPointerTagging="false">
+    android:extractNativeLibs="true" android:hardwareAccelerated="true" android:label="@string/app_title" android:requestLegacyExternalStorage="true" android:allowNativeHeapPointerTagging="false">
         <meta-data android:name="com.google.android.gms.APPLICATION_ID" android:value="@string/admob_id"/>
         <meta-data android:name="com.google.android.gms.ads.AD_MANAGER_APP" android:value="true"/>
-        <activity android:name="org.qtproject.qt.android.bindings.QtActivity" android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density" android:label="Vārdu Vimba" android:launchMode="singleTop" android:screenOrientation="portrait">
+        <activity android:name="org.qtproject.qt.android.bindings.QtActivity" android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density" android:label="@string/app_title" android:launchMode="singleTop" android:screenOrientation="portrait">
             <intent-filter>
                               <action android:name="android.intent.action.MAIN"/>
                               <category android:name="android.intent.category.LAUNCHER"/>

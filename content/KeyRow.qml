@@ -51,7 +51,7 @@ Row {
             // special keys can expand to consume available space on the side
             width: key.special ? specialSize : row.size
 
-            height: 48 * root.heightScale
+            height: Math.round( 48 * root.heightScale )
 
             // 0 - backspace; 1 - enter/return; a-z - normal button
             property bool special: row.letters[index] === '0' || row.letters[index] === '1'
@@ -148,12 +148,12 @@ Row {
             Text {
                 id: text
                 visible: !key.special
-                font.pixelSize: 20 * root.heightScale
+                font.pixelSize: Math.round( 26 * Math.min( root.widthScale, root.heightScale ))
                 font.bold: true
                 style: Text.Raised
                 styleColor: root.palette['dark']
                 color: 'white'
-                bottomPadding: 2
+                bottomPadding: 2 * Math.min( root.widthScale, root.heightScale )
                 width: showSubletter ? key.width / 2 : key.width
                 text: ( showSubletter ? '  ' : '' ) + key.letter
                 anchors.verticalCenter: parent.verticalCenter;
@@ -164,12 +164,12 @@ Row {
             Text {
                 id: subText
                 visible: !key.special && showSubletter
-                font.pixelSize: 20 * root.heightScale
+                font.pixelSize: Math.round( 26 * Math.min( root.widthScale, root.heightScale ))
                 font.bold: true
                 style: Text.Raised
                 styleColor: '#000000'
                 color: 'white'
-                bottomPadding: 2
+                bottomPadding: 2 * Math.min( root.widthScale, root.heightScale )
                 width: showSubletter ? key.width / 2 : key.width
                 text: key.subLetter + '  '
                 x: key.width / 2
@@ -182,20 +182,20 @@ Row {
 
             // backspace icon
             Image {
-                visible: row.letters[index] === '1'
-                source: '../icons/accept.svg'
+                visible: row.letters[index] === '0'
+                source: '../icons/left.svg'
                 anchors.centerIn: parent
-                sourceSize.width: parent.height * 0.5
-                sourceSize.height: parent.height * 0.5
+                sourceSize.width: Math.round( text.font.pixelSize * 1.1 );
+                sourceSize.height: Math.round( text.font.pixelSize * 1.1 );
             }
 
             // accept icon for the return/enter key
             Image {
-                visible: row.letters[index] === '0'
-                source: '../icons/left.svg'
+                visible: row.letters[index] === '1'
+                source: '../icons/accept.svg'
                 anchors.centerIn: parent
-                sourceSize.width: parent.height * 0.5
-                sourceSize.height: parent.height * 0.5
+                sourceSize.width: Math.round( text.font.pixelSize * 1.1 );
+                sourceSize.height: Math.round( text.font.pixelSize * 1.1 );
             }
 
             /*
@@ -247,6 +247,22 @@ Row {
 
                 onReleased: {
                     timer.stop();
+
+
+                    if ( root.gameOver ) {
+                        console.log( 'Ignore input' )
+                        return;
+                    }
+
+                    if ( root.currentString.length === 0 && key.letter === '0' ) {
+                        console.log( 'Ignore backspace' )
+                        return;
+                    }
+
+                    if (( root.currentString.length < root.word.length ) && key.letter === '1' ) {
+                        console.log( 'Ignore enter' )
+                        return;
+                    }
 
                     if ( root.os === 'android' && !root.gameOver ) {
                         if (( root.currentString.length < root.word.length ) || key.letter === '0' || key.letter === '1' )

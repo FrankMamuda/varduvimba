@@ -32,6 +32,12 @@ Row {
     property int rowIndex: 0
     property Repeater letters: repeater
     property int size: 64
+    property bool demo: false
+
+    // set state directly (for demo mode)
+    property var setState: function( index, state ) {
+        letters.itemAt( index ).letter.state = state;
+    }
 
     // resets the state of all letters to inactive
     property var reset: function() {
@@ -43,7 +49,7 @@ Row {
 
     Repeater {
         id: repeater
-        model: root.word.length
+        model: row.demo ? row.word.length : root.word.length
 
         Item {
             width: row.size
@@ -62,7 +68,7 @@ Row {
                 border.color: ( row.rowIndex === root.currentRow && !root.gameOver ) ? root.palette['activeBorder'] : root.palette['border']
                 state: 'inactive'
                 color: 'transparent'
-                border.width: 3
+                border.width: Math.round( 3 * Math.min( root.heightScale, root.widthScale ))
                 anchors.centerIn: parent
                 property real widthScale: 1.0
 
@@ -115,7 +121,7 @@ Row {
                         PropertyChanges {
                             target: letter
                             color: 'transparent'
-                            border.width: 3
+                            border.width: Math.round( 3 * Math.min( root.heightScale, root.widthScale ))
                         }
                     },
                     State {
@@ -162,7 +168,7 @@ Row {
                     radius: row.size / 8
                     color: 'white'
                     opacity: 0.2
-                    visible: mouseArea.containsMouse && !root.gameOver
+                    visible: mouseArea.containsMouse && !root.gameOver && !row.demo
                 }
 
                 /*
@@ -171,13 +177,13 @@ Row {
                 Text {
                     id: text
                     anchors.centerIn: parent
-                    font.pixelSize: 40 * ( row.size / 64 )// * root.heightScale
+                    font.pixelSize: Math.round( 40 * ( row.size / 64 ))
                     text: row.word.length <= index ? ' ' : row.word[index]
                     font.bold: true
                     style: Text.Raised
                     styleColor: ( letter.state === 'inactive' && !root.darkMode ) ? 'transparent' : root.palette['dark']
                     color: !root.darkMode ? ( letter.state === 'inactive' ? 'black' : 'white' ) : root.palette['light']
-                    bottomPadding: ( root.os === 'android' ? 2 : 6 )// *  root.heightScale
+                    bottomPadding: Math.round(( root.os === 'android' ? 2 : 6 ) * Math.min( root.heightScale, root.widthScale ))
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignHCenter
 
@@ -227,7 +233,7 @@ Row {
                     id: mouseArea
                     anchors.fill: parent
                     hoverEnabled: true
-                    enabled: true
+                    enabled: !row.demo
 
                     onClicked: {
                         if ( root.gameOver )

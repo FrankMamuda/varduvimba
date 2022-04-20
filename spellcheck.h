@@ -37,8 +37,9 @@ class SpellCheck : public QObject {
     Q_OBJECT
 
 public:
-    explicit SpellCheck( const QString &path, const QString &fileName );
+    explicit SpellCheck();
     ~SpellCheck() override;
+    Q_INVOKABLE void initialize( const QString &path, const QString &fileName );
     Q_INVOKABLE bool isValid( const QString &word ) const;
     Q_INVOKABLE QString generateRandomWord( int length = 5 ) const;
     Q_INVOKABLE void addWord( const QString &word );
@@ -47,4 +48,5 @@ private:
     Hunspell *hunspell = nullptr;
     QStringList words;
     QStringList customWords;
+    QString locale;
 };

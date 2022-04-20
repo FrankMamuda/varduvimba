@@ -68,24 +68,32 @@ int main( int argc, char *argv[] ) {
 #else
     const QString destinationPath( QDir::currentPath() + "/" );
 #endif
-    const QString locale( "lv_LV" );
-    const QString affDestination( destinationPath + locale + ".aff" );
-    const QString dicDestination( destinationPath + locale + ".dic" );
-    const QString affSource( sourcePath + locale + ".aff" );
-    const QString dicSource( sourcePath + locale + ".dic" );
 
-    if ( !QFileInfo::exists( affDestination ))
-        QFile::copy( affSource, affDestination );
 
-    if ( !QFileInfo::exists( dicDestination ))
-        QFile::copy( dicSource, dicDestination );
+    // TODO: check size and force copy if it differs
+    auto copyLocale = [ sourcePath, destinationPath ]( const QString &locale ) {
+        const QString affd( destinationPath + locale + ".aff" );
+        const QString dicd( destinationPath + locale + ".dic" );
+        const QString affs( sourcePath + locale + ".aff" );
+        const QString dics( sourcePath + locale + ".dic" );
+
+        if ( !QFileInfo::exists( affd ))
+            QFile::copy( affs, affd );
+
+        if ( !QFileInfo::exists( dicd ))
+            QFile::copy( dics, dicd );
+    };
+    copyLocale( "en_US" );
+    copyLocale( "lv_LV" );
 
     // initialize cpp objects for use in QML
-    SpellCheck spellCheck( destinationPath, "lv_LV" );
+    SpellCheck spellCheck;
     Settings settings;
 #ifdef Q_OS_ANDROID
     HapticFeedback hapticFeedback;
 #endif
+
+    //qDebug() << "System locale is" << QLocale::system().name();
 
     // set cpp objects as QML properties
     engine.setInitialProperties( {
@@ -96,6 +104,8 @@ int main( int argc, char *argv[] ) {
                                      { "hapticFeedback", QVariant::fromValue( &hapticFeedback ) },
                                  #endif
 
+                                     { "path", destinationPath },
+                                     { "locale", QLocale::system().name() },
 
                                  #ifdef PRODUCTION_RELEASE
                                      { "production", true },

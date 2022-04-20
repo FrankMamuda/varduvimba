@@ -30,12 +30,12 @@ import 'scripts/main.js' as MainJS
  */
 Window {
     id: root
-    minimumWidth: 480
-    minimumHeight: 600
+    minimumWidth: 240
+    minimumHeight: 480
     width: 411
     height: 823
     visible: true
-    title: qsTr( "Vārdotājs" )
+    title: root.strings[root.locale]['title']
 
     /*
      * os specific variables
@@ -56,10 +56,12 @@ Window {
     /*
      * game state and initial settings
      */
-    property string word: 'VARDE'
+    property string word: root.strings[root.locale]['default']
     property string usedLetters: ''
     property string correctLetters: ''
     property string currentString: ''
+    property string locale: 'en_US'
+    property string path: ''
 
     property int currentRow: 0
     property int initialRows: 6
@@ -99,6 +101,86 @@ Window {
     property Content.YesNoDialog addWordDialog: addWordDialog
     property Content.YesNoDialog giveUpDialog: giveUpDialog
     property Content.YesNoDialog resetDialog: resetDialog
+
+    // avoiding qsTr for now
+    property var locales: [ 'en_US', 'lv_LV' ];
+    property var strings: {
+        'lv_LV': {
+            'giveup': 'Padodies?',
+            'giveup_yes': 'Jā, neko nemāku!',
+            'giveup_no': 'Nē, nekad!',
+            'new': 'Jaunu vārdu?',
+            'new_yes': 'Jā, šis nesanāk!',
+            'new_no': 'Nē, uzgaidi!',
+            'unknown': 'Vārds neeksistē!\nPievienot vārdnīcai?',
+            'reveal': 'Nepaveicās! Vārds ir \'',
+            'win': 'Uzvara!',
+            'settings': 'Uzstādījumi',
+            'letters': 'Burtu skaits',
+            'guesses': 'Minējumu skaits',
+            'dark': 'Tumšais režīms',
+            'close': 'Aizvērt',
+            'default': 'VARDE',
+            'title': 'Vārdu Vimba',
+            'add_title': 'Pievienot vārdu \'',
+            'add_title2': '\' vārdnīcai?',
+            'add_yes': 'Apsolu, tāds eksistē!',
+            'add_no': 'Pārdomāju!',
+            'ads_yes': 'JĀREKLĀMĀM',
+            'ads_no': 'NĒREKLĀMĀM',
+            'language': 'Valoda',
+            'latvian': 'latviešu',
+            'english': 'angļu',
+            'help_title': 'Kā spēlēt',
+            'help_desc0': 'Uzmini vārdu vairākos mēģinājumos. Pēc katra minējuma, burta krāsa norādīs, cik tuvu esi pareizajam vārdam.',
+            'help_desc1': 'Burts \'S\' ir pareizajā vietā.',
+            'help_desc2': 'Vārds satur burtu \'O\', tikai citā vietā.',
+            'help_desc3': 'Burts \'Ž\' nav vārdā vispār.',
+            'help_desc4': 'Vārds nav vārdnīcā. Uzspied, lai pievienotu!',
+            'help_word0': 'TUSĒT',
+            'help_word1': 'MODES',
+            'help_word2': 'ŽAUNA',
+            'help_word3': 'DRON',
+        },
+        'en_US': {
+            'giveup': 'Give up?',
+            'giveup_yes': 'Yes, I failed!',
+            'giveup_no': 'No, never!',
+            'new': 'New word?',
+            'new_yes': 'Yes, I\'m stuck!',
+            'new_no': 'No, wait!',
+            'unknown': 'Word does not exist!\nAdd to dictonary?',
+            'reveal': 'Bad luck! \'',
+            'reveal2': '\' is the word.',
+            'win': 'Good job!',
+            'settings': 'Settings',
+            'letters': 'Letter count',
+            'guesses': 'Number of guesses',
+            'dark': 'Dark mode',
+            'close': 'Close',
+            'default': 'FROGS',
+            'title': 'Word Vimba',
+            'add_title': 'Add word \'',
+            'add_title2': '\' to the dictionary?',
+            'add_yes': 'I promise it exists!',
+            'add_no': 'Changed my mind.',
+            'ads_yes': 'GIVEMEADS',
+            'ads_no': 'NOMOREADS',
+            'language': 'Language',
+            'latvian': 'latvian',
+            'english': 'english',
+            'help_title': 'How to play',
+            'help_desc0': 'Guess the word in multiple tries. After each guess letter background will display how close you are to solving the puzzle.',
+            'help_desc1': 'The letter \'S\' is in the correct spot.',
+            'help_desc2': 'Word contains the letter \'O\', but in a different spot.',
+            'help_desc3': 'Words does not contain the letter \'Q\'.',
+            'help_desc4': 'Word is not in the dictionary. Tap to add it!',
+            'help_word0': 'FISHY',
+            'help_word1': 'BORED',
+            'help_word2': 'QUITS',
+            'help_word3': 'NSFW',
+        },
+    }
 
     Component.onCompleted: {
         MainJS.load();
@@ -176,7 +258,7 @@ Window {
 
             // accepts only letters in latvian
             validator: RegularExpressionValidator {
-                regularExpression: /[ĀEĒRTUŪIĪOPĻASŠDFGĢHJKĶLZŽCČVBNŅM]/i
+                regularExpression: root.locale === 'lv_LV' ? /[ĀEĒRTUŪIĪOPĻASŠDFGĢHJKĶLZŽCČVBNŅM]/i : /[QWERTYUIOPASDFGHJKLZXCVBNM]/i
             }
 
             property string current: ''
@@ -238,7 +320,7 @@ Window {
 
                     property int maxWidth: ( root.width - (( root.word.length + 1 ) * letterRow.spacing ) ) / root.word.length
                     property int maxHeight: ( root.height - keyboard.height - banner.height - ( 32 /*messageRect.height + 4*/ ) - (( root.initialRows + 1 ) * letterColumn.spacing ) ) / root.initialRows
-                    size: Math.min( 96 * root.heightScale, Math.min( maxHeight, maxWidth ))
+                    size: Math.round( Math.min( 96 * root.heightScale, Math.min( maxHeight, maxWidth )))
 
                     state: 'inactive'
                 }
@@ -288,7 +370,7 @@ Window {
             width: message.width * ( root.lost ? 1.1 : 1.25 )
             color: root.lost || root.badWord ? root.palette['red'] : root.palette['green']
             radius: message.height / 2
-            scale: root.heightScale * messageScale
+            scale: messageScale //Math.round( Math.min( root.heightScale, root.widthScale ) * messageScale )
             property real messageScale: 0.0
 
             opacity: 0
@@ -359,21 +441,45 @@ Window {
             Text {
                 id: message
                 anchors.centerIn: parent
-                font.pixelSize: ( root.badWord || root.lost ) ? ( Math.round(( 20 + root.word.length ) * ( -0.83 ) + 45 )) : 28
-                text: root.badWord ? 'Vārds neeksistē!\nPievienot vārdnīcai?' : ( root.lost ? ( 'Nepaveicās! Vārds ir \'' + root.word + '\'' ) : ( 'Uzvara!' ))
+                font.pixelSize: Math.round((( root.badWord || root.lost ) ? ( Math.round(( 20 + root.word.length ) * ( -0.83 ) + ( root.locale === 'lv_LV' ? 46 : 45 ))) : 32 ) * Math.min( root.widthScale, root.heightScale ))
                 font.bold: true
                 style: Text.Raised
                 styleColor: '#000000'
                 color: 'white'
                 horizontalAlignment: Text.AlignHCenter
+
+                Component.onCompleted: {
+                    text = Qt.binding( function() {
+                        if ( root.badWord )
+                            return root.strings[root.locale]['unknown'];
+
+                        if ( root.lost ) {
+                            if ( root.locale === 'lv_LV' ) {
+                                return root.strings[root.locale]['reveal'] + root.word + '\'';
+                            } else if ( root.locale === 'en_US' ) {
+                                return root.strings[root.locale]['reveal'] + root.word + root.strings[root.locale]['reveal2'];
+                            }
+                            return '';
+                        }
+
+                        return root.strings[root.locale]['win'];
+                    } );
+                }
             }
         }
 
         /*
-         * Settings Dialog
+         * Settings dialog
          */
         Content.Settings {
             id: settings
+        }
+
+        /*
+         * Help dialog
+         */
+        Content.Help {
+            id: help
         }
 
         /*
@@ -382,9 +488,9 @@ Window {
         Content.YesNoDialog {
             id: giveUpDialog
 
-            title: 'Padodies?'
-            yes: 'Jā, neko nemāku!'
-            no: 'Nē, nekad!'
+            title: root.strings[root.locale]['giveup']
+            yes: root.strings[root.locale]['giveup_yes']
+            no: root.strings[root.locale]['giveup_no']
 
             onAccepted: {
                 root.lost = true;
@@ -400,9 +506,9 @@ Window {
         Content.YesNoDialog {
             id: resetDialog
 
-            title: 'Jaunu vārdu?'
-            yes: 'Jā, šis nesanāk!'
-            no: 'Nē, uzgaidi!'
+            title: root.strings[root.locale]['new']
+            yes: root.strings[root.locale]['new_yes']
+            no: root.strings[root.locale]['new_no']
 
             onAccepted: {
                 root.resetRows();
@@ -416,9 +522,9 @@ Window {
         Content.YesNoDialog {
             id: addWordDialog
 
-            title: 'Pievienot vārdu \'' + root.currentString +  '\' vārdnīcai?'
-            yes: 'Apsolu, tāds eksistē!'
-            no: 'Pārdomāju!'
+            title: root.strings[root.locale]['add_title'] + root.currentString + root.strings[root.locale]['add_title2']
+            yes: root.strings[root.locale]['add_yes']
+            no: root.strings[root.locale]['add_no']
 
             onAccepted: {
                 root.addWord();
@@ -435,7 +541,7 @@ Window {
         'orange': '#eab407',
         'inactive': root.darkMode ? '#344154' : '#aaaaaa',
         'keyboard': root.darkMode ? '#344154' : '#aaaaaa',
-        'keyboardPopup': root.darkMode ? '#303e51' : '#abb8d0',
+        'keyboardPopup': root.darkMode ? '#303e51' : '#aaaaaa',
         'activeBorder': '#788982',
         'border': '#485772',
         'dark': root.darkMode ? 'black' : '#ff888888',

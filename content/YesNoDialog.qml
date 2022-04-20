@@ -25,12 +25,12 @@ import QtQuick.Controls
 Dialog {
     id: dialog
     anchors.centerIn: parent
+    bottomMargin: root.banner.height
     modal: true
     title: 'Title'
 
     property string yes: 'Yes'
     property string no: 'No'
-
 
     header: Item {}
 
@@ -45,7 +45,8 @@ Dialog {
     contentItem: Column {
         id: column
         anchors.centerIn: parent
-        spacing: 16
+        spacing: Math.round( 16 * column.contentScale )
+        property real contentScale: Math.min( root.widthScale, root.heightScale )
 
         Component.onCompleted: {
             for ( let item in children )
@@ -53,7 +54,7 @@ Dialog {
         }
 
         Item {
-            height: header.height + 16
+            height: Math.round( header.height + 16 * column.contentScale )
             width: header.width
 
             Rectangle {
@@ -61,12 +62,12 @@ Dialog {
                 color: root.palette['activeBorder']
                 opacity: .4
                 width: root.width
-                height: header.height + 16
+                height: Math.round( header.height + 16 * column.contentScale )
             }
 
             Text {
                 id: header
-                font.pixelSize: 34
+                font.pixelSize: Math.round( 34 * column.contentScale )
                 anchors.centerIn: parent
                 text: dialog.title
                 font.bold: true
@@ -81,6 +82,8 @@ Dialog {
 
         ColourButton {
             text: dialog.yes
+            fontPixelSize: Math.round( 28 * column.contentScale )
+
             onClicked: {
                 if ( root.os === 'android' )
                     root.hapticFeedback.send( 3 );
@@ -92,6 +95,8 @@ Dialog {
         ColourButton {
             text: dialog.no
             color: root.palette['red']
+            fontPixelSize: Math.round( 28 * column.contentScale )
+
             onClicked: {
                 if ( root.os === 'android' )
                     root.hapticFeedback.send( 3 );
@@ -99,5 +104,11 @@ Dialog {
                 dialog.reject();
             }
         }
+    }
+
+    onClosed: {
+        // restore text input focus (it sometimes looses focus for no reason)
+        if ( root.os !== 'android' )
+            root.textInput.focus = true;
     }
 }

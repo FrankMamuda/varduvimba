@@ -32,12 +32,45 @@
  * @param path
  * @param fileName
  */
-SpellCheck::SpellCheck( const QString &path, const QString &fileName ) {
+SpellCheck::SpellCheck() {}
+
+/**
+ * @brief SpellCheck::~SpellCheck
+ */
+SpellCheck::~SpellCheck() {
+    delete this->hunspell;
+}
+
+/**
+ * @brief SpellCheck::initialize
+ * @param path
+ * @param fileName
+ */
+void SpellCheck::initialize( const QString &path, const QString &fileName ) {
+    //qDebug() << "Request spellcheck" << fileName << this->locale;
+
+    // no need to reinitialize if locales match
+    if ( !QString::compare( this->locale, fileName ))
+        return;
+
+    // announce
+    qDebug() << "Initialize spellcheck" << fileName;
+
+    // clear initial words
+    this->words.clear();
+    this->customWords.clear();
+
+    // save locale
+    this->locale = fileName;
+
+    if ( this->hunspell != nullptr )
+        delete this->hunspell;
+
     // initialize hunspell
     this->hunspell = new Hunspell( QString( path + fileName + ".aff" ).toLocal8Bit().constData(), QString( path + fileName + ".dic" ).toLocal8Bit().constData());
 
     // retrieve user added words from settings
-    this->customWords = QSettings().value( "customWords" ).toStringList();
+    this->customWords = QSettings().value( "customWords_" + this->locale ).toStringList();
     for ( const QString &word : this->customWords ) {
         if ( word.isEmpty())
             continue;
@@ -71,20 +104,13 @@ SpellCheck::SpellCheck( const QString &path, const QString &fileName ) {
 }
 
 /**
- * @brief SpellCheck::~SpellCheck
- */
-SpellCheck::~SpellCheck() {
-    delete this->hunspell;
-}
-
-/**
  * @brief SpellCheck::isValid
  * @param word
  * @return
  */
 bool SpellCheck::isValid( const QString &word ) const {
     // use hunspell to check spelling
-    return this->hunspell->spell( word.toStdString());
+    return this->hunspell->spell( word.toLower().toStdString());
 }
 
 /**
@@ -98,17 +124,67 @@ QString SpellCheck::generateRandomWord( int length ) const {
     //       1) pick a random word from the dictionary
     //       2) use hunspell to generate suggestions for the word
     //       3) pick a random word from the suggestions with the required length
+
+    // TODO: proper A-Z validation
+
     forever {
         const qsizetype index = QRandomGenerator::global()->bounded( this->words.count());
         const QString baseWord( this->words.at( index ));
+
+        if ( baseWord.contains( "'" ) || baseWord.contains( " " ))
+            continue;
+
         std::vector<std::string> generated = this->hunspell->suggest( baseWord.toStdString());
 
         QStringList list;
         if ( baseWord.length() == length )
             list << baseWord;
 
+
+        /*QString expression;
+        if ( !QString::compare( this->locale, "lv_LV" ))
+            expression = QString( "[QWERTYUIOPASDFGHJKLZXCVBNM]{%1}" ).arg( length ).toLower();
+        if ( !QString::compare( this->locale, "en_US" ))
+            expression = QString( "[ĀEĒRTUŪIĪOPĻASŠDFGĢHJKĶLZŽCČVBNŅM]{%1}" ).arg( length ).toLower();
+
+        const QRegularExpression rx( expression, QRegularExpression::CaseInsensitiveOption );
+        const QRegularExpressionValidator validator( rx );*/
+
+        // FIXME: ignore invalid word "kažok"
+
         for ( auto &w : generated ) {
-           const QString word = QString::fromStdString( w );
+           QString word = QString::fromStdString( w );
+           //int pos = 0;
+
+           if ( word.simplified().length() != length ) {
+               //qDebug() << "ignore bad length word" << word;
+               continue;
+           }
+
+           if ( word.contains( "'" ) || word.contains( " " )) {
+               qDebug() << "ignore hypenated or spaced word" << word << this->locale;
+               continue;
+           }
+
+           /*if ( validator.validate( word, pos ) != QValidator::Acceptable ) {
+               qDebug() << "ignore invalid word" << word << this->locale;
+               continue;
+           }*/
+
+           // this works better than validator
+           bool badWord = false;
+           for ( QChar ch : word ) {
+               if ( !ch.isLetter()) {
+                    qDebug() << "ignore invalid word" << word << this->locale;
+                    badWord = true;
+                    break;
+               }
+           }
+
+
+           if ( badWord )
+               continue;
+
            if ( word.length() == length )
                list << word;
         }
@@ -129,7 +205,9 @@ QString SpellCheck::generateRandomWord( int length ) const {
  * @brief SpellCheck::addWord
  * @param word
  */
-void SpellCheck::addWord( const QString &word ) {
+void SpellCheck::addWord( const QString &w ) {
+    const QString word( w.toLower());
+
     // TODO: perform proper validation
     if ( word.isEmpty())
         return;
@@ -137,7 +215,12 @@ void SpellCheck::addWord( const QString &word ) {
     if ( !word.at( 0 ).isLetter())
         return;
 
+    if ( this->customWords.contains( word ))
+        return;
+
     this->customWords.append( word );
-    QSettings().setValue( "customWords", this->customWords );
+    this->customWords.removeDuplicates();
+
+    QSettings().setValue( "customWords_" + this->locale, this->customWords );
     this->hunspell->add( word.toStdString());
 }

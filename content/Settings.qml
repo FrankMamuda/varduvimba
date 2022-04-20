@@ -26,7 +26,8 @@ Popup {
     id: settings
     anchors.centerIn: parent
     modal: true
-    property string title: 'Uzstādījumi'
+    property string title: root.strings[root.locale]['settings']
+    closePolicy: Popup.CloseOnPressOutside
 
     background: Rectangle {
         color: 'transparent'
@@ -39,8 +40,19 @@ Popup {
     contentItem: Column {
         id: column
         anchors.centerIn: parent
-        spacing: 16
-        scale: Math.max( 1.0, Math.min( root.widthScale, root.heightScale ))
+        spacing: Math.round( 16 * column.contentScale );
+        width: root.width / column.contentScale;
+
+        /*
+         * Scaling - we cannot use scale directly as it miscalculates popup position on screen
+         *           therefore we have to update scale for each element
+         *           also we must keep track of both widthScale and heigtScale for layout changes
+         */
+        property real contentScale: Math.min( root.widthScale, root.heightScale )
+        property real widthScale: root.widthScale
+        property real heightScale: root.heightScale
+        onWidthScaleChanged: column.width = root.width / column.contentScale;
+        onHeightScaleChanged: column.width = root.width / column.contentScale;
 
         Component.onCompleted: {
             for ( let item in children )
@@ -48,7 +60,7 @@ Popup {
         }
 
         Item {
-            height: header.height + 16
+            height: Math.round( header.height + 16 * column.contentScale )
             width: header.width
 
             Rectangle {
@@ -56,12 +68,12 @@ Popup {
                 color: root.palette['activeBorder']
                 opacity: .4
                 width: root.width / column.scale
-                height: header.height + 16
+                height: Math.round( header.height + 16 * column.contentScale )
             }
 
             Text {
                 id: header
-                font.pixelSize: 34
+                font.pixelSize: Math.round( 34 * column.contentScale )
                 anchors.centerIn: parent
                 text: settings.title
                 font.bold: true
@@ -75,29 +87,32 @@ Popup {
         }
 
         Item {
-            width: 8
-            height: 12
+            width: 1
+            height: Math.round( 12 * column.contentScale )
         }
 
         Spinner {
             id: letters
             anchors.horizontalCenter: column.horizontalCenter
             value: root.initialLength
-            text: 'Burtu skaits'
+            text: root.strings[root.locale]['letters']
             min: 4
             max: 10
+            contentScale: column.contentScale
         }
 
         Spinner {
             id: guesses
             anchors.horizontalCenter: column.horizontalCenter
             value: root.initialRows
-            text: 'Minējumu skaits'
+            text: root.strings[root.locale]['guesses']
             min: 4
             max: 10
+            contentScale: column.contentScale
         }
 
         Spinner {
+            visible: root.locale === 'lv_LV'
             anchors.horizontalCenter: column.horizontalCenter
             value: root.keyboard.mode
             text: 'Klaviatūra'
@@ -105,6 +120,7 @@ Popup {
             textValues: [ "kompakta", "3-rindu", "4-rindu" ]
             min: 0
             max: 2
+            contentScale: column.contentScale
 
             // this can be done instantly, because reset is not required
             onValueChanged: {
@@ -115,16 +131,57 @@ Popup {
             }
         }
 
+        Spinner {
+            anchors.horizontalCenter: column.horizontalCenter
+            value: locales.indexOf( root.locale ) === -1 ? 0 : locales.indexOf( root.locale )
+            text: root.strings[root.locale]['language']
+            textMode: true
+            textValues: [ root.strings[root.locale]['latvian'], root.strings[root.locale]['english'] ]
+            min: 0
+            max: 1
+            property var locales: [ 'lv_LV', 'en_US' ]
+            contentScale: column.contentScale
+
+            onValueChanged: {
+                if ( settings.visible ) {
+                    // set new locale and reinitialize spellCheck
+                    root.locale = locales[value];
+                    root.spellCheck.initialize( root.path, root.locale )
+                    root.word = '';
+
+                    // reset view
+                    root.reset( true );
+
+                    // save state
+                    root.save();
+                }
+            }
+        }
+
         NamedSwitch {
             anchors.horizontalCenter: column.horizontalCenter
-            text: 'Tumšais režīms'
+            text: root.strings[root.locale]['dark']
             checked: root.darkMode
+            contentScale: column.contentScale
 
             onClicked: {
                 root.darkMode = !root.darkMode;
                 root.save();
             }
         }
+
+        // swap keys Switch
+        // disabled for now
+        /*NamedSwitch {
+            anchors.horizontalCenter: column.horizontalCenter
+            text: root.strings[root.locale]['swap']
+            checked: root.darkMode
+
+            onClicked: {
+                root.swap = !root.darkMode;
+                root.save();
+            }
+        }*/
 
         /*
         NamedSwitch {
@@ -135,15 +192,22 @@ Popup {
 
         Item {
             width: 1
-            height: 16
+            height: Math.round( 16 * column.contentScale )
         }
 
         ColourButton {
             color: 'white'
-            text: 'Aizvērt'
+            text: root.strings[root.locale]['close']
             onClicked: { settings.close(); }
             textColor: 'black'
             styleColor: 'white'
+            fontPixelSize: Math.round( 28 * column.contentScale )
+        }
+
+        // padding
+        Item {
+            width: 1
+            height: root.banner.height
         }
     }
 
