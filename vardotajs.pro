@@ -22,8 +22,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 INCLUDEPATH += $$PWD/include/
 
-CONFIG += locale_en
-
 resources.prefix = /$${TARGET}
 
 RESOURCES += resources.qrc
@@ -78,7 +76,6 @@ DISTFILES += \
     content/NamedSwitch.qml \
     content/Settings.qml \
     content/Spinner.qml \
-    content/TextButton.qml \
     content/YesNoDialog.qml \
     content/Help.qml \
     main.qml \

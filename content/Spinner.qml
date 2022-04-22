@@ -101,6 +101,7 @@ Item {
                     styleColor: 'white'
                     color: 'black'
                     verticalAlignment: Text.AlignVCenter
+                    bottomPadding: Math.round( 2 * spinner.contentScale )
                 }
 
                 ImageButton {

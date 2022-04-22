@@ -171,17 +171,17 @@ Popup {
         }
 
         // swap keys Switch
-        // disabled for now
-        /*NamedSwitch {
+        NamedSwitch {
             anchors.horizontalCenter: column.horizontalCenter
             text: root.strings[root.locale]['swap']
-            checked: root.darkMode
+            checked: root.swap
+            contentScale: column.contentScale
 
             onClicked: {
-                root.swap = !root.darkMode;
+                root.swap = !root.swap;
                 root.save();
             }
-        }*/
+        }
 
         /*
         NamedSwitch {
@@ -192,7 +192,7 @@ Popup {
 
         Item {
             width: 1
-            height: Math.round( 16 * column.contentScale )
+            height: Math.round( 2 * column.contentScale )
         }
 
         ColourButton {

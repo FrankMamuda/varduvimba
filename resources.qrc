@@ -11,7 +11,6 @@
         <file>content/NamedSwitch.qml</file>
         <file>content/Settings.qml</file>
         <file>content/Spinner.qml</file>
-        <file>content/TextButton.qml</file>
         <file>main.qml</file>
         <file>scripts/main.js</file>
         <file>icons/accept.svg</file>

@@ -137,55 +137,35 @@ QString SpellCheck::generateRandomWord( int length ) const {
         std::vector<std::string> generated = this->hunspell->suggest( baseWord.toStdString());
 
         QStringList list;
-        if ( baseWord.length() == length )
-            list << baseWord;
 
+        auto checkWord = [ this, length ]( const QString &word ) {
+            if ( word.length() != length )
+                return false;
 
-        /*QString expression;
-        if ( !QString::compare( this->locale, "lv_LV" ))
-            expression = QString( "[QWERTYUIOPASDFGHJKLZXCVBNM]{%1}" ).arg( length ).toLower();
-        if ( !QString::compare( this->locale, "en_US" ))
-            expression = QString( "[ĀEĒRTUŪIĪOPĻASŠDFGĢHJKĶLZŽCČVBNŅM]{%1}" ).arg( length ).toLower();
+            if ( word.contains( "'" ) || word.contains( " " ) || word.contains( "\n" )) {
+                //qDebug() << "ignore hypenated or spaced word" << word << this->locale;
+                return false;
+            }
 
-        const QRegularExpression rx( expression, QRegularExpression::CaseInsensitiveOption );
-        const QRegularExpressionValidator validator( rx );*/
+            // this works better than validator
+            for ( QChar ch : word ) {
+                if ( !ch.isLetter()) {
+                //     qDebug() << "ignore invalid word" << word << this->locale;
+                     return false;
+                }
+            }
 
-        // FIXME: ignore invalid word "kažok"
+            return true;
+        };
+
+        if ( baseWord.length() == length ) {
+            if ( checkWord( baseWord ))
+                list << baseWord;
+        }
 
         for ( auto &w : generated ) {
-           QString word = QString::fromStdString( w );
-           //int pos = 0;
-
-           if ( word.simplified().length() != length ) {
-               //qDebug() << "ignore bad length word" << word;
-               continue;
-           }
-
-           if ( word.contains( "'" ) || word.contains( " " )) {
-               qDebug() << "ignore hypenated or spaced word" << word << this->locale;
-               continue;
-           }
-
-           /*if ( validator.validate( word, pos ) != QValidator::Acceptable ) {
-               qDebug() << "ignore invalid word" << word << this->locale;
-               continue;
-           }*/
-
-           // this works better than validator
-           bool badWord = false;
-           for ( QChar ch : word ) {
-               if ( !ch.isLetter()) {
-                    qDebug() << "ignore invalid word" << word << this->locale;
-                    badWord = true;
-                    break;
-               }
-           }
-
-
-           if ( badWord )
-               continue;
-
-           if ( word.length() == length )
+           const QString word( QString::fromStdString( w ));
+           if ( checkWord( word ))
                list << word;
         }
 

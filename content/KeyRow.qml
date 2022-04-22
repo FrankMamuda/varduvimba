@@ -51,11 +51,11 @@ Row {
             // special keys can expand to consume available space on the side
             width: key.special ? specialSize : row.size
 
-            height: Math.round( 48 * root.heightScale )
+            height: Math.round( 48 * Math.min( root.heightScale, root.widthScale * 1.5 ));
 
             // 0 - backspace; 1 - enter/return; a-z - normal button
             property bool special: row.letters[index] === '0' || row.letters[index] === '1'
-            property string letter: row.letters[index]
+            property string letter: ! root.swap ? row.letters[index] : row.letters[index].replace( '1', '_' ).replace( '0', '1' ).replace( '_', '0' );
             property string subLetter: index >= row.subLetters.length ? ' ' : row.subLetters[index]
             property bool incorrect: false
             property bool incorrectSub: false
@@ -180,9 +180,19 @@ Row {
 
             property bool showSubletter: root.keyboard.compact && ( key.letter !== key.subLetter )
 
+            /*Rectangle {
+                width: parent.width
+                height: parent.width * 0.8
+                radius: parent.width * 0.35
+                anchors.centerIn: parent
+                color: key.letter === '0' ? 'white' : 'black'
+                opacity: .2
+                visible: key.letter === '0' || key.letter === '1'
+            }*/
+
             // backspace icon
             Image {
-                visible: row.letters[index] === '0'
+                visible: key.letter === '0'
                 source: '../icons/left.svg'
                 anchors.centerIn: parent
                 sourceSize.width: Math.round( text.font.pixelSize * 1.1 );
@@ -191,7 +201,7 @@ Row {
 
             // accept icon for the return/enter key
             Image {
-                visible: row.letters[index] === '1'
+                visible: key.letter === '1'
                 source: '../icons/accept.svg'
                 anchors.centerIn: parent
                 sourceSize.width: Math.round( text.font.pixelSize * 1.1 );
@@ -366,10 +376,12 @@ Row {
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignHCenter
                     anchors.centerIn: parent
-                    color: root.darkMode ? 'white' : 'black'
+                    color: 'white'
                     text: popup.letter
                     font.pixelSize: popup.size / 2
                     font.bold: true
+                    style: Text.Raised
+                    styleColor: '#000000'
                 }
             }
         }

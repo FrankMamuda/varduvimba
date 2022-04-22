@@ -77,6 +77,7 @@ Window {
     property bool animationsDisabled: false
     property bool darkMode: true
     property bool production
+    property bool swap: false
 
     // default is admob test id for the banner
     property string adMobId: 'ca-app-pub-3940256099942544/6300978111'
@@ -140,7 +141,8 @@ Window {
             'help_word0': 'TUSĒT',
             'help_word1': 'MODES',
             'help_word2': 'ŽAUNA',
-            'help_word3': 'DRON',
+            'help_word3': 'KLUK',
+            'swap': 'Apmainīt pogas',
         },
         'en_US': {
             'giveup': 'Give up?',
@@ -165,20 +167,21 @@ Window {
             'add_yes': 'I promise it exists!',
             'add_no': 'Changed my mind.',
             'ads_yes': 'GIVEMEADS',
-            'ads_no': 'NOMOREADS',
+            'ads_no':  'NOMOREADS',
             'language': 'Language',
-            'latvian': 'latvian',
-            'english': 'english',
+            'latvian': 'Latvian',
+            'english': 'English',
             'help_title': 'How to play',
-            'help_desc0': 'Guess the word in multiple tries. After each guess letter background will display how close you are to solving the puzzle.',
+            'help_desc0': 'Guess the word in multiple tries. After each guess letter background will show how close you are to solving the puzzle.',
             'help_desc1': 'The letter \'S\' is in the correct spot.',
             'help_desc2': 'Word contains the letter \'O\', but in a different spot.',
-            'help_desc3': 'Words does not contain the letter \'Q\'.',
+            'help_desc3': 'Word does not contain the letter \'Q\'.',
             'help_desc4': 'Word is not in the dictionary. Tap to add it!',
             'help_word0': 'FISHY',
             'help_word1': 'BORED',
             'help_word2': 'QUITS',
             'help_word3': 'NSFW',
+            'swap': 'Swap keys',
         },
     }
 

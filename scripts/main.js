@@ -33,6 +33,7 @@ function save() {
     state.z = root.lost;
     state.d = root.darkMode;
     state.x = root.locale;
+    state.s = root.swap;
 
     // save in external string
     root.settings.set( "state", JSON.stringify( state ));
@@ -102,6 +103,7 @@ function load() {
     root.initialRows = state.r === undefined ? 6 : state.r;
     root.keyboard.mode = state.k === undefined ? 1 : state.k;
     root.darkMode = state.d === undefined ? true : state.d;
+    root.swap = state.s === undefined ? false : state.s;
 
     // revert to default system locale
     root.locale = state.x === undefined ? root.locale : state.x;

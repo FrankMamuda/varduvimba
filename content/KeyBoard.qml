@@ -62,6 +62,13 @@ Column {
         width: parent.width
         height: Math.round(( toolBar.height ) * root.heightScale + 4 )
 
+        Rectangle {
+            id: shade
+            opacity: .2
+            color: 'black'
+            anchors.fill: toolBarRect
+        }
+
         Row {
             id: toolBar
             spacing: ( width - 3 * buttonWidth ) / 2

@@ -61,3 +61,5 @@ libs/*
 dictionary/*
 android/res/values/admob.xml
 hunspell/*
+android/gradle.properties
+android/res/values/libs.xml
